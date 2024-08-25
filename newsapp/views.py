@@ -1,10 +1,10 @@
-
+import os.path
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views.generic import ListView, DetailView
 
-from newsapp.models import NewsLetter
+from newsapp.models import NewsLetter, Client, Message
 
 
 class NewsLetterListView(ListView):
@@ -12,6 +12,22 @@ class NewsLetterListView(ListView):
     template_name = 'newsapp/index.html'
     extra_context = {
         'title': 'Рассылки'
+    }
+
+class ClientListView(ListView):
+    model = Client
+    template_name = 'newsapp/other_list.html'
+    extra_context = {
+        'title': 'Клиенты',
+        'title_plural': 'клиентов'
+    }
+
+
+class MessageListView(ListView):
+    model = Message
+    extra_context = {
+        'title': 'Сообщения',
+        'title_plural': 'сообщений'
     }
 
 class NewsLetterDetailView(DetailView):
