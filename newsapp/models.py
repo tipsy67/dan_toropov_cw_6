@@ -12,7 +12,10 @@ class Client(models.Model):
     comment = models.TextField(**NULLABLE, verbose_name='Комментарий')
 
     def __str__(self):
-        return f'{self.last_name} {self.first_name} {self.patronymic}({self.email})'
+        patronymic = ''
+        if self.patronymic is not None:
+            patronymic = self.patronymic
+        return f'{self.last_name} {self.first_name} {patronymic}({self.email})'
 
     class Meta:
         verbose_name = 'Клиент'
@@ -23,6 +26,7 @@ class Message(models.Model):
     title = models.CharField(max_length=100, verbose_name='Тема')
     text = models.TextField(verbose_name='Текст')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Создано')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Изменено')
 
     def __str__(self):
         return f'{self.title}'

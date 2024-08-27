@@ -53,7 +53,7 @@
                                 {% endif %}
                             </td>
                             <td>{{object.message}}</td>
-                            <td>{{object.comment}}</td>
+                            <td>{{object.comment|truncatechars:80}}</td>
                         </tr>
                         {% endfor %}
                         </tbody>
