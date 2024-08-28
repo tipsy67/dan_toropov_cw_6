@@ -9,7 +9,17 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
+                            <div class="d-flex justify-content-between">
+                            <span>
+<!--                            <i class="fas fa-table me-1"></i>-->
                             <h4 class="card-title">{{object.name}}</h4>
+                            </span>
+                            <a href="#"
+                               class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+                                <i class="text-end bi bi-person-plus"></i>
+                                Редактировать рассылку
+                            </a>
+                            </div>
                             <div class="text-muted">Создана {{object.created_at}}</div>
                         </div>
                         <div class="card-body">
@@ -64,7 +74,7 @@
                                     </table>
                                 </li>
                             </ul>
-                            <a href="#" class="btn btn-outline-primary">Перейти куда-нибудь</a>
+<!--                            <a href="#" class="btn btn-outline-primary">Перейти куда-нибудь</a>-->
                         </div>
                     </div>
                 </div>
