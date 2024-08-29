@@ -8,9 +8,9 @@
         <meta name="description" content="" />
         <meta name="author" content="" />
         <title>{{ title }}</title>
-        <link rel="icon" href={% static 'chat-chat-svgrepo-com.svg' %} type="image/x-icon">
+        <link rel="icon" href="{% static 'newsapp/chat-chat-svgrepo-com.svg' %}">
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
-        <link href={% static 'newsapp/css/styles.css' %} rel="stylesheet" />
+        <link href="{% static 'newsapp/css/styles.css' %}" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     </head>
     <body class="sb-nav-fixed">
@@ -45,7 +45,7 @@
                     <div class="sb-sidenav-menu">
                         <div class="nav">
                             <div class="sb-sidenav-menu-heading">Меню</div>
-                            <a class="nav-link" href="{% url 'newsapp:home' %}">
+                            <a class="nav-link" href="{% url 'newsapp:newsletter_list' %}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Рассылки
                             </a>

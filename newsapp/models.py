@@ -53,7 +53,7 @@ class NewsLetter (models.Model):
     name = models.CharField(max_length=50, verbose_name='Название')
     comment = models.TextField(**NULLABLE, verbose_name='Комментарий')
     first_mailing_at = models.DateTimeField(verbose_name='Первая отправка')
-    periodic = models.CharField(max_length=2, choices = PEREODIC, default='OT', verbose_name='Переодичность')
+    periodic = models.CharField(max_length=2, choices = PEREODIC, default='OT', verbose_name='Периодичность')
     status = models.CharField(max_length=3, choices= STATUS, default='OFF',  verbose_name='Статус')
     clients = models.ManyToManyField('Client', verbose_name='Клиенты')
     message = models.ForeignKey('Message', on_delete=models.PROTECT, related_name='message', verbose_name= 'Сообщение')
