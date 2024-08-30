@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load newsapp_tags %}
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">{{ title }}</h1>
+
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between">
+                    <span>
+                    <i class="fas fa-table me-1"></i>
+                    Список {{ title_plural }}
+                    </span>
+<!--                    <a href="#" class="btn btn-outline-primary">-->
+                    <a href="{% url 'newsapp:client_new' %}" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+                        <i class="text-end bi bi-person-plus"></i>
+                        Добавить клиента
+                    </a>
+                </div>
+                <div class="card-body">
+                    <table id="datatablesSimple">
+                        <thead>
+                        <tr>
+                            <th>ФИО</th>
+                            <th>Почта</th>
+                            <th>Комментарий</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>ФИО</th>
+                            <th>Почта</th>
+                            <th>Комментарий</th>
+                        </tr>
+                        </tfoot>
+                        <tbody>
+                        {% for object in object_list %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'newsapp:client_edit' object.pk %}" data-bs-toggle="tooltip"
+                                       title="Редактировать клиента">
+                                    {{ object.last_name }} {{object.first_name}}
+                                    {% if object.patronymic %}
+                                        {{ object.patronymic }}
+                                    {% endif %}
+                                </a>
+                            </td>
+                            <td>{{object.email}}</td>
+                            <td>{{object.comment|truncatechars:80}}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+    {% include 'footer.html' %}
+
+</div>
+{% endblock content %}

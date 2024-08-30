@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">{{ title }}</h1>
+
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between">
+                    <span>
+                    <i class="fas fa-table me-1"></i>
+                    Список {{ title_plural }}
+                    </span>
+                    <a href="{% url 'newsapp:message_new' %}"
+                       class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+                        <i class="text-end bi bi-person-plus"></i>
+                        Добавить сообщение
+                    </a>
+                </div>
+                <div class="card-body">
+                    <table id="datatablesSimple">
+                        <thead>
+                        <tr>
+                            <th>Заголовок</th>
+                            <th>Текст</th>
+                            <th>Создано</th>
+                            <th>Изменено</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>Заголовок</th>
+                            <th>Текст</th>
+                            <th>Создано</th>
+                            <th>Изменено</th>
+                        </tr>
+                        </tfoot>
+                        <tbody>
+                        {% for object in object_list %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'newsapp:message_edit' object.pk %}"
+                                   {% if object.newsletters.exists %}
+                                       class="link-warning" data-bs-toggle="tooltip"
+                                       title="Внимание! Сообщение используется в рассылках!">
+                                   {% else %}
+                                       data-bs-toggle="tooltip"
+                                       title="Редактировать сообщение">
+                                   {% endif %}
+                                   {{object.title}}
+                                </a>
+                            </td>
+                            <td>{{object.text|truncatechars:100}}</td>
+                            <td>{{object.created_at}}</td>
+                            <td>{{object.updated_at}}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+    {% include 'footer.html' %}
+
+</div>
+{% endblock content %}
