@@ -39,7 +39,8 @@
                         {% for object in object_list %}
                         <tr>
                             <td>
-                                <a href="{% url 'newsapp:client_edit' object.pk %}">
+                                <a href="{% url 'newsapp:client_edit' object.pk %}" data-bs-toggle="tooltip"
+                                       title="Редактировать клиента">
                                     {{ object.last_name }} {{object.first_name}}
                                     {% if object.patronymic %}
                                         {{ object.patronymic }}

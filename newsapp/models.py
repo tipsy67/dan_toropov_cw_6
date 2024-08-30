@@ -56,7 +56,7 @@ class NewsLetter (models.Model):
     periodic = models.CharField(max_length=2, choices = PEREODIC, default='OT', verbose_name='Периодичность')
     status = models.CharField(max_length=3, choices= STATUS, default='OFF',  verbose_name='Статус')
     clients = models.ManyToManyField('Client', verbose_name='Клиенты')
-    message = models.ForeignKey('Message', on_delete=models.PROTECT, related_name='message', verbose_name= 'Сообщение')
+    message = models.ForeignKey('Message', on_delete=models.PROTECT, related_name='newsletters', verbose_name= 'Сообщение')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name= 'Создана')
 
     def __str__(self):

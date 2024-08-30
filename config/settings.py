@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'newsapp',
+    'django_apscheduler',
 ]
 
 MIDDLEWARE = [
