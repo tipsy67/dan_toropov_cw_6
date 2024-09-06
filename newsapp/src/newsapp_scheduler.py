@@ -7,70 +7,101 @@ from django_apscheduler.jobstores import DjangoJobStore
 from django_apscheduler.models import DjangoJobExecution
 from django_apscheduler import util
 
-
-def message_job():
-    print("Запущен планировщик задач для запуска рассылок. Для остановки нажмите Ctrl+C")
+from newsapp.src.utils import sendmail
 
 
-class NewsAppCommandScheduler(BlockingScheduler):
+class NewsAppCommandScheduler:
 
-    SCHEDULER:BackgroundScheduler|None = None
+    SCHEDULER:BlockingScheduler|None = None
 
-    def __init__(self):
-        super().__init__(timezone=settings.TIME_ZONE)
-        self.add_jobstore(DjangoJobStore(), "default")
-        self.add_job(
-            message_job,
+    @classmethod
+    def start_scheduler(cls):
+        cls.SCHEDULER = BlockingScheduler(timezone=settings.TIME_ZONE)
+        cls.SCHEDULER.add_jobstore(DjangoJobStore(), "default")
+        cls.SCHEDULER.add_job(
+            cls.message_job,
             trigger=CronTrigger(second="*/10"),
             id="message_job_q2hd38",
             max_instances=1,
             replace_existing=True,
         )
         try:
-            self.start()
+            cls.SCHEDULER.start()
         except KeyboardInterrupt:
             # self.shutdown(wait=False)
             # time.sleep(1)
-            self.remove_job("message_job_q2hd38")
+            cls.SCHEDULER.remove_job("message_job_q2hd38")
+
+    @staticmethod
+    def message_job():
+        print("Запущен планировщик задач для запуска рассылок. Для остановки нажмите Ctrl+C")
 
 
 
-class NewsAppScheduler(BackgroundScheduler):
+class NewsAppScheduler:
+
 
     SCHEDULER:BackgroundScheduler|None = None
 
     @classmethod
     def start_scheduler(cls):
-        if cls.SCHEDULER is not None:
-            cls.SCHEDULER = super().__init__(timezone=settings.TIME_ZONE)
+        if cls.SCHEDULER is None:
+            cls.SCHEDULER = BackgroundScheduler(timezone=settings.TIME_ZONE)
             cls.SCHEDULER.add_jobstore(DjangoJobStore(), "default")
             cls.SCHEDULER.start()
 
+
     @classmethod
-    def job_new(cls):
-        pass
+    def set_trigger_params(cls, obj):
+        trigger_params = {'start_date': obj.first_mailing_at}
+        if obj.periodic == 'PD':
+            trigger_params['day'] = '*'
+        elif obj.periodic == 'PW':
+            trigger_params['week'] = '*'
+        elif obj.periodic == 'PM':
+            trigger_params['month'] = '*'
+
+        return trigger_params
+
+    @classmethod
+    def job_new(cls, obj):
+        args = [obj.clients, obj.message.title, obj.message.text]
+        cls.SCHEDULER.add_job(
+            sendmail,
+            trigger=CronTrigger(**cls.set_trigger_params(obj)),
+            id=str(obj.pk),
+            max_instances=1,
+            replace_existing=True,
+            *args
+        )
 
     @classmethod
     def job_on(cls, pk):
-        pass
+        cls.SCHEDULER.resume_job(str(pk))
 
     @classmethod
     def job_off(cls, pk):
-        pass
+        cls.SCHEDULER.pause_job(str(pk))
 
     @classmethod
-    def job_update(cls, pk):
-        pass
+    def job_update(cls, obj):
+        cls.SCHEDULER.reschedule_job(
+            sendmail(obj.clients, obj.name, obj.message),
+            trigger=CronTrigger(**cls.set_trigger_params(obj)),
+            id=obj.pk,
+            max_instances=1,
+            replace_existing=True,
+        )
 
     @classmethod
     def job_delete(cls, pk):
-        pass
+        cls.SCHEDULER.remove_job(str(pk))
 
     # The `close_old_connections` decorator ensures that database connections, that have become
     # unusable or are obsolete, are closed before and after your job has run. You should use it
     # to wrap any jobs that you schedule that access the Django database in any way.
     @util.close_old_connections
-    def delete_old_job_executions(max_age=604_800):
+    def delete_old_job_executions(self, max_age=604_800):
         """
         This job deletes APScheduler job execution entries older than `max_age` from the database.
         It helps to prevent the database from filling up with old historical records that are no

@@ -2,6 +2,8 @@ from email.policy import default
 
 from django.db import models
 
+from newsapp.src.newsapp_scheduler import NewsAppScheduler
+
 NULLABLE = {'null':True, 'blank':True}
 
 class Client(models.Model):
@@ -66,6 +68,10 @@ class NewsLetter (models.Model):
         verbose_name = 'Рассылка'
         verbose_name_plural = 'Рассылки'
         ordering = ['created_at', 'name']
+
+    def save(self, *args,**kwargs):
+        super(NewsLetter,self).save(*args, **kwargs)
+        NewsAppScheduler.job_new(self)
 
 
 class NewsLetterHistory (models.Model):
