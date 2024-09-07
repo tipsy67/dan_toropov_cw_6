@@ -6,7 +6,8 @@ from newsapp.models import NewsLetter, Client, Message, NewsLetterHistory
 @admin.register(NewsLetter)
 class NewsLetterAdmin(admin.ModelAdmin):
     list_filter = ('name', 'message', 'status')
-    fields = ('name',  'first_mailing_at', 'periodic', 'status', 'message')
+    fields = ('name',  'first_mailing_at', 'periodic', 'status', 'message', 'clients')
+    filter_horizontal = ['clients']
 
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):

@@ -1,6 +1,7 @@
 from email.policy import default
 
 from django.db import models
+from django_apscheduler.models import DjangoJobExecution
 
 from newsapp.src.newsapp_scheduler import NewsAppScheduler
 
@@ -57,7 +58,7 @@ class NewsLetter (models.Model):
     first_mailing_at = models.DateTimeField(verbose_name='Первая отправка')
     periodic = models.CharField(max_length=2, choices = PEREODIC, default='OT', verbose_name='Периодичность')
     status = models.CharField(max_length=3, choices= STATUS, default='OFF',  verbose_name='Статус')
-    clients = models.ManyToManyField('Client', verbose_name='Клиенты')
+    clients = models.ManyToManyField('Client', related_name='newsletters',verbose_name='Клиенты')
     message = models.ForeignKey('Message', on_delete=models.PROTECT, related_name='newsletters', verbose_name= 'Сообщение')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name= 'Создана')
 
@@ -69,9 +70,11 @@ class NewsLetter (models.Model):
         verbose_name_plural = 'Рассылки'
         ordering = ['created_at', 'name']
 
-    def save(self, *args,**kwargs):
-        super(NewsLetter,self).save(*args, **kwargs)
-        NewsAppScheduler.job_new(self)
+    def get_history(self):
+        return DjangoJobExecution.objects.filter(job_id=str(self.pk))
+    # def save(self, *args,**kwargs):
+    #     super(NewsLetter,self).save(*args, **kwargs)
+    #     NewsAppScheduler.job_new(self)
 
 
 class NewsLetterHistory (models.Model):

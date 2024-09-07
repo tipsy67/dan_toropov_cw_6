@@ -11,6 +11,10 @@ from newsapp.src.utils import sendmail
 
 
 class NewsAppCommandScheduler:
+    """
+    Класс для запуска планировщика из команды джанго.
+    Блокирует дальнейшее выполнение до прерывания из консоли
+    """
 
     SCHEDULER:BlockingScheduler|None = None
 
@@ -39,7 +43,9 @@ class NewsAppCommandScheduler:
 
 
 class NewsAppScheduler:
-
+    """
+    Класс для работы с планировщиком из приложения рассылок
+    """
 
     SCHEDULER:BackgroundScheduler|None = None
 
@@ -53,26 +59,39 @@ class NewsAppScheduler:
 
     @classmethod
     def set_trigger_params(cls, obj):
+        """
+        Установка парметров триггера крон, исходя из свойств объекта NewsLetter
+        """
         trigger_params = {'start_date': obj.first_mailing_at}
+        obj_datetime = obj.first_mailing_at.timetuple()
+        trigger_params['hour'] = obj_datetime.tm_hour
+        trigger_params['minute'] = obj_datetime.tm_min
         if obj.periodic == 'PD':
             trigger_params['day'] = '*'
         elif obj.periodic == 'PW':
+            trigger_params['day_of_week'] = obj_datetime.tm_wday
             trigger_params['week'] = '*'
         elif obj.periodic == 'PM':
+            trigger_params['day'] = obj_datetime.tm_mday
             trigger_params['month'] = '*'
+        else:
+            trigger_params['day'] = obj_datetime.tm_mday
+            trigger_params['month'] = obj_datetime.tm_mon
+            trigger_params['year'] = '*'
 
         return trigger_params
 
     @classmethod
     def job_new(cls, obj):
-        args = [obj.clients, obj.message.title, obj.message.text]
+        email_list = [x.email for x in obj.clients.all()]
+        args = [email_list, obj.message.title, obj.message.text]
         cls.SCHEDULER.add_job(
             sendmail,
             trigger=CronTrigger(**cls.set_trigger_params(obj)),
             id=str(obj.pk),
             max_instances=1,
             replace_existing=True,
-            *args
+            args=args
         )
 
     @classmethod
@@ -86,11 +105,8 @@ class NewsAppScheduler:
     @classmethod
     def job_update(cls, obj):
         cls.SCHEDULER.reschedule_job(
-            sendmail(obj.clients, obj.name, obj.message),
             trigger=CronTrigger(**cls.set_trigger_params(obj)),
-            id=obj.pk,
-            max_instances=1,
-            replace_existing=True,
+            job_id=obj.pk
         )
 
     @classmethod
