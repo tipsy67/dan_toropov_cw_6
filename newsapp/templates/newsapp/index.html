@@ -48,12 +48,12 @@
                             <td class="center">{{object.get_periodic_display}}</td>
                             <td class="center">
                                 {% if object.status == 'ON' %}
-                                    <a href="{% url 'newsapp:status' object.pk %}" class="link-success"
+                                    <a href="{% url 'newsapp:status' object.pk 'list' %}" class="link-success"
                                     data-bs-toggle="tooltip" title="Выключить рассылку">
                                     {{object.get_status_display}}
                                     </a>
                                 {% elif object.status == 'OFF' %}
-                                    <a href="{% url 'newsapp:status' object.pk %}" class="link-danger"
+                                    <a href="{% url 'newsapp:status' object.pk 'list' %}" class="link-danger"
                                     data-bs-toggle="tooltip" title="Включить рассылку">
                                     {{object.get_status_display}}
                                     </a>

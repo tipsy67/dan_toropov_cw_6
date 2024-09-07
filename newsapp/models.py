@@ -40,17 +40,15 @@ class Message(models.Model):
 
 class NewsLetter (models.Model):
     PEREODIC = {
-        'OT': 'onetime',
-        'PD': 'daily',
-        'PW': 'weekly',
-        'PM': 'monthly'
+        'OT': 'разовая',
+        'PD': 'ежедневная',
+        'PW': 'еженедельная',
+        'PM': 'ежемесячная'
     }
 
     STATUS = {
-        'ON': 'active',
-        'RUN': 'running',
-        'OFF': 'inactive',
-        'OK': 'completed'
+        'ON': 'включена',
+        'OFF': 'выключена',
     }
 
     name = models.CharField(max_length=50, verbose_name='Название')

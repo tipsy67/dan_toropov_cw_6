@@ -118,7 +118,7 @@ class MessageCreateView(CreateView):
     }
 
 
-def change_status(request, pk):
+def change_status(request, pk, page):
     newsletter_item = get_object_or_404(NewsLetter, pk=pk)
     if newsletter_item.status == 'ON':
         newsletter_item.status = 'OFF'
@@ -127,7 +127,8 @@ def change_status(request, pk):
         newsletter_item.status = 'ON'
         NewsAppScheduler.job_on(pk)
     newsletter_item.save()
-
+    if page == 'detail':
+        return redirect(reverse('newsapp:newsletter_view', args=(pk,)))
     return redirect(reverse('newsapp:newsletter_list'))
 
 

@@ -14,11 +14,11 @@
 <!--                            <i class="fas fa-table me-1"></i>-->
                             <h4 class="card-title">{{object.name}}</h4>
                             </span>
-                            <a href="{% url 'newsapp:newsletter_edit' object.pk %}"
-                               class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
-                                <i class="text-end bi bi-person-plus"></i>
-                                Редактировать рассылку
-                            </a>
+                                <a href="{% url 'newsapp:newsletter_edit' object.pk %}"
+                                   class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+                                    <i class="text-end bi bi-person-plus"></i>
+                                    Редактировать рассылку
+                                </a>
                             </div>
                             <div class="text-muted">Создана {{object.created_at}}</div>
                         </div>
@@ -34,7 +34,19 @@
                                 </li>
                                 <li class="list-group-item">
                                     <b class="text-muted">Статус: </b>
+                                    {% if object.status == 'ON' %}
+                                    <a href="{% url 'newsapp:status' object.pk 'detail' %}" class="link-success"
+                                       data-bs-toggle="tooltip" title="Выключить рассылку">
+                                        {{object.get_status_display}}
+                                    </a>
+                                    {% elif object.status == 'OFF' %}
+                                    <a href="{% url 'newsapp:status' object.pk 'detail' %}" class="link-danger"
+                                       data-bs-toggle="tooltip" title="Включить рассылку">
+                                        {{object.get_status_display}}
+                                    </a>
+                                    {% else %}
                                     {{object.get_status_display}}
+                                    {% endif %}
                                 </li>
                                 <li class="list-group-item">
                                     <b class="text-muted">Сообщение: </b>
@@ -50,31 +62,33 @@
                                         <thead>
                                         <tr>
                                             <th>Начата</th>
-                                            <th>Завершена</th>
+                                            <th>Длительность</th>
                                             <th>Статус</th>
                                             <th>Ответ сервера</th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {% for item in object.history.all %}
+                                        {% for item in object.get_history %}
                                         <tr>
-                                            <td>{{item.started_at}}</td>
-                                            <td>{{item.finished_at}}</td>
+                                            <td>{{item.run_time}}</td>
+                                            <td>{{item.duration}}</td>
                                             <td>
-                                                {% if item.is_success %}
+                                                {% if item.status == 'Error!' %}
+                                                <div class="text-danger">Ошибка</div>
+                                                {% elif item.status == 'Executed'%}
                                                 Завершена
                                                 {% else %}
-                                                <div class="text-warning">Ошибка</div>
+                                                Выполняется
                                                 {% endif %}
                                             </td>
-                                            <td>{{item.comment}}</td>
+                                            <td>{{item.exception}}</td>
                                         </tr>
                                         {% endfor %}
                                         </tbody>
                                     </table>
                                 </li>
                             </ul>
-<!--                            <a href="#" class="btn btn-outline-primary">Перейти куда-нибудь</a>-->
+                            <!--                            <a href="#" class="btn btn-outline-primary">Перейти куда-нибудь</a>-->
                         </div>
                     </div>
                 </div>
