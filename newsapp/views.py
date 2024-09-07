@@ -7,8 +7,9 @@ from django.views.generic import ListView, DetailView, UpdateView, CreateView
 from newsapp.admin import ClientAdmin
 from newsapp.forms import NewsLetterForm
 from newsapp.models import NewsLetter, Client, Message
+from newsapp.src.newsapp_scheduler import NewsAppScheduler
 
-
+# Рассылки ------------------------
 class NewsLetterListView(ListView):
     model = NewsLetter
     template_name = 'newsapp/index.html'
@@ -26,6 +27,16 @@ class NewsLetterUpdateView(UpdateView):
         'title_card': 'Редактирование рассылки'
     }
 
+    def form_valid(self, form):
+        if form.is_valid():
+            new_obj = form.save()
+            new_obj.status = 'OFF'
+            new_obj.save()
+            NewsAppScheduler.job_new(new_obj)
+            NewsAppScheduler.job_off(new_obj.pk)
+
+        return super().form_valid(form)
+
 class NewsLetterCreateView(CreateView):
     model = NewsLetter
     form_class = NewsLetterForm
@@ -36,6 +47,19 @@ class NewsLetterCreateView(CreateView):
         'title_card': 'Добавление рассылки'
     }
 
+    def form_valid(self, form):
+        if form.is_valid():
+            new_obj = form.save()
+            NewsAppScheduler.job_new(new_obj)
+            NewsAppScheduler.job_off(new_obj.pk)
+
+        return super().form_valid(form)
+
+
+class NewsLetterDetailView(DetailView):
+    model = NewsLetter
+
+# Клиенты ------------------------
 class ClientListView(ListView):
     model = Client
     # template_name = 'newsapp/other_list.html'
@@ -65,7 +89,7 @@ class ClientCreateView(CreateView):
     }
 
 
-
+# Сообщения ------------------------
 class MessageListView(ListView):
     model = Message
     extra_context = {
@@ -93,18 +117,18 @@ class MessageCreateView(CreateView):
         'title_card': 'Добавление сообщения'
     }
 
-class NewsLetterDetailView(DetailView):
-    model = NewsLetter
 
-
-def change_status(request, pk):
+def change_status(request, pk, page):
     newsletter_item = get_object_or_404(NewsLetter, pk=pk)
     if newsletter_item.status == 'ON':
         newsletter_item.status = 'OFF'
+        NewsAppScheduler.job_off(pk)
     elif newsletter_item.status == 'OFF':
         newsletter_item.status = 'ON'
+        NewsAppScheduler.job_on(pk)
     newsletter_item.save()
-
+    if page == 'detail':
+        return redirect(reverse('newsapp:newsletter_view', args=(pk,)))
     return redirect(reverse('newsapp:newsletter_list'))
 
 
