@@ -2,7 +2,8 @@ from django.urls import path
 
 from newsapp.apps import NewsappConfig
 from newsapp.views import NewsLetterListView, NewsLetterDetailView, change_status, ClientListView, MessageListView, \
-    ClientUpdateView, MessageUpdateView, ClientCreateView, NewsLetterCreateView, MessageCreateView, NewsLetterUpdateView
+    ClientUpdateView, MessageUpdateView, ClientCreateView, NewsLetterCreateView, MessageCreateView, \
+    NewsLetterUpdateView, MessageDeleteView
 
 app_name = NewsappConfig.name
 
@@ -17,6 +18,7 @@ urlpatterns = [
     path('client_new/', ClientCreateView.as_view(), name='client_new'),
     path('message_list', MessageListView.as_view(), name='message_list'),
     path('message_edit/<int:pk>', MessageUpdateView.as_view(), name='message_edit'),
+    path('message_delete/<int:pk>', MessageDeleteView.as_view(), name='message_delete'),
     path('message_new/', MessageCreateView.as_view(), name='message_new'),
 
 ]

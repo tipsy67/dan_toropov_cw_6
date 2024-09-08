@@ -8,16 +8,24 @@
             <h1 class="mt-4">{{ title }}</h1>
 
             <div class="card mb-4">
-                <div class="card-header">
+                <div class="card-header d-flex justify-content-between">
+                    <span>
                     <i class="fas fa-table me-1"></i>
                     {{ title_card }}
+                    </span>
+                    <span>
+                    <a href="{% url title_href.url object.pk %}" class="link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+                        <i class="text-end bi bi-person-plus"></i>
+                        {{ title_href.text }}
+                    </a>
+                    </span>
                 </div>
                 <div class="card-body">
                     <form action="" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="form-error">{{ form.non_field_errors }}</div>
                         {% for f in form %}
-                        <p><label class="col-sm-2 col-form-label align-top"  for="{{ f.id_for_label }}">{{ f.label }}</label>{{ f }}</p>
+                        <p><label class="col-sm-2 col-form-label align-top" for="{{ f.id_for_label }}">{{ f.label }}</label>{{ f }}</p>
                         <div class="text-danger">{{ f.errors }}</div>
                         {% endfor %}
                         <p>

@@ -2,7 +2,7 @@ import os.path
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
-from django.views.generic import ListView, DetailView, UpdateView, CreateView
+from django.views.generic import ListView, DetailView, UpdateView, CreateView, DeleteView
 
 from newsapp.admin import ClientAdmin
 from newsapp.forms import NewsLetterForm
@@ -59,6 +59,16 @@ class NewsLetterCreateView(CreateView):
 class NewsLetterDetailView(DetailView):
     model = NewsLetter
 
+class NewsLetterDeleteView(DeleteView):
+    model = Client
+    template_name = 'newsapp/uni_delete.html'
+    success_url = reverse_lazy('newsapp:newsLetter_list')
+    extra_context = {
+        'title': 'Удаление сообщения',
+        'title_card': 'сообщение',
+        'title_href': {'url':'newsapp:client_edit'},
+    }
+
 # Клиенты ------------------------
 class ClientListView(ListView):
     model = Client
@@ -76,6 +86,17 @@ class ClientUpdateView(UpdateView):
     extra_context = {
         'title': 'Клиент',
         'title_card': 'Редактирование клиента'
+    }
+
+
+class ClientDeleteView(DeleteView):
+    model = Client
+    template_name = 'newsapp/uni_delete.html'
+    success_url = reverse_lazy('newsapp:client_list')
+    extra_context = {
+        'title': 'Удаление сообщения',
+        'title_card': 'сообщение',
+        'title_href': {'url':'newsapp:client_edit'},
     }
 
 class ClientCreateView(CreateView):
@@ -104,8 +125,21 @@ class MessageUpdateView(UpdateView):
     success_url = reverse_lazy('newsapp:message_list')
     extra_context = {
         'title': 'Сообщениe',
+        'title_href': {'url':'newsapp:message_delete', 'text':'Удалить сообщениe'},
         'title_card': 'Редактирование сообщения'
     }
+
+
+class MessageDeleteView(DeleteView):
+    model = Message
+    template_name = 'newsapp/uni_delete.html'
+    success_url = reverse_lazy('newsapp:message_list')
+    extra_context = {
+        'title': 'Удаление сообщения',
+        'title_card': 'сообщение',
+        'title_href': {'url':'newsapp:message_edit'},
+    }
+
 
 class MessageCreateView(CreateView):
     model = Message
