@@ -24,7 +24,8 @@ class NewsLetterUpdateView(UpdateView):
     success_url = reverse_lazy('newsapp:newsletter_list')
     extra_context = {
         'title': 'Рассылка',
-        'title_card': 'Редактирование рассылки'
+        'title_card': 'Редактирование рассылки',
+        'title_href': {'url': 'newsapp:newsletter_delete', 'text': 'Удалить рассылку'},
     }
 
     def form_valid(self, form):
@@ -44,7 +45,7 @@ class NewsLetterCreateView(CreateView):
     success_url = reverse_lazy('newsapp:newsletter_list')
     extra_context = {
         'title': 'Рассылка',
-        'title_card': 'Добавление рассылки'
+        'title_card': 'Добавление рассылки',
     }
 
     def form_valid(self, form):
@@ -60,13 +61,13 @@ class NewsLetterDetailView(DetailView):
     model = NewsLetter
 
 class NewsLetterDeleteView(DeleteView):
-    model = Client
+    model = NewsLetter
     template_name = 'newsapp/uni_delete.html'
-    success_url = reverse_lazy('newsapp:newsLetter_list')
+    success_url = reverse_lazy('newsapp:newsletter_list')
     extra_context = {
-        'title': 'Удаление сообщения',
-        'title_card': 'сообщение',
-        'title_href': {'url':'newsapp:client_edit'},
+        'title': 'Удаление рассылки',
+        'title_card': 'рассылку',
+        'title_href': {'url':'newsapp:newsletter_edit'},
     }
 
 # Клиенты ------------------------
@@ -85,7 +86,8 @@ class ClientUpdateView(UpdateView):
     success_url = reverse_lazy('newsapp:client_list')
     extra_context = {
         'title': 'Клиент',
-        'title_card': 'Редактирование клиента'
+        'title_card': 'Редактирование клиента',
+        'title_href': {'url': 'newsapp:client_delete', 'text': 'Удалить клиента'},
     }
 
 
@@ -94,8 +96,8 @@ class ClientDeleteView(DeleteView):
     template_name = 'newsapp/uni_delete.html'
     success_url = reverse_lazy('newsapp:client_list')
     extra_context = {
-        'title': 'Удаление сообщения',
-        'title_card': 'сообщение',
+        'title': 'Удаление клиента',
+        'title_card': 'клиента',
         'title_href': {'url':'newsapp:client_edit'},
     }
 
@@ -106,7 +108,7 @@ class ClientCreateView(CreateView):
     success_url = reverse_lazy('newsapp:client_list')
     extra_context = {
         'title': 'Клиент',
-        'title_card': 'Добавление клиента'
+        'title_card': 'Добавление клиента',
     }
 
 
@@ -148,7 +150,7 @@ class MessageCreateView(CreateView):
     success_url = reverse_lazy('newsapp:message_list')
     extra_context = {
         'title': 'Сообщениe',
-        'title_card': 'Добавление сообщения'
+        'title_card': 'Добавление сообщения',
     }
 
 
