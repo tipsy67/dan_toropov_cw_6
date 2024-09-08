@@ -1,6 +1,7 @@
 from email.policy import default
 
 from django.db import models
+from django.template.defaultfilters import truncatechars
 from django_apscheduler.models import DjangoJobExecution
 
 from newsapp.src.newsapp_scheduler import NewsAppScheduler
@@ -32,7 +33,7 @@ class Message(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Изменено')
 
     def __str__(self):
-        return f'{self.title}'
+        return f'{self.title} ({truncatechars(self.text, 50)})'
 
     class Meta:
         verbose_name = 'Сообщение'
@@ -61,7 +62,7 @@ class NewsLetter (models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name= 'Создана')
 
     def __str__(self):
-        return f'{self.name}'
+        return f'{self.name} ({self.first_mailing_at}) {self.message.title}'
 
     class Meta:
         verbose_name = 'Рассылка'

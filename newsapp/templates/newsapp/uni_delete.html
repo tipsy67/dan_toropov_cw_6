@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load newsapp_tags %}
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">{{ title }}</h1>
+
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between">
+                    <span>
+                    <i class="fas fa-table me-1"></i>
+                    Вы действительно хотите удалить {{ title_card }}?
+                    </span>
+                </div>
+                <div class="card-body">
+                    <p>
+                    <h4>
+                        {{object}}
+                    </h4>
+                    </p>
+                    <form action="" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <p>
+                            <button type="submit" class="gy-2 w-100 btn btn-lg btn-outline-danger">Удалить</button>
+                        </p>
+                        <p>
+                            <a href="{% url title_href.url object.pk %}"
+                               class="gy-2 w-100 btn btn-lg btn-outline-primary">Отменить</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+    {% include 'footer.html' %}
+
+</div>
+{% endblock content %}
