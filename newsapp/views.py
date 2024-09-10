@@ -1,13 +1,11 @@
-import os.path
-
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, UpdateView, CreateView, DeleteView
 
-from newsapp.admin import ClientAdmin
 from newsapp.forms import NewsLetterForm
 from newsapp.models import NewsLetter, Client, Message
 from newsapp.src.newsapp_scheduler import NewsAppScheduler
+
 
 # Рассылки ------------------------
 class NewsLetterListView(ListView):
@@ -16,6 +14,7 @@ class NewsLetterListView(ListView):
     extra_context = {
         'title': 'Рассылки'
     }
+
 
 class NewsLetterUpdateView(UpdateView):
     model = NewsLetter
@@ -37,6 +36,7 @@ class NewsLetterUpdateView(UpdateView):
             NewsAppScheduler.job_off(new_obj.pk)
 
         return super().form_valid(form)
+
 
 class NewsLetterCreateView(CreateView):
     model = NewsLetter
@@ -60,6 +60,7 @@ class NewsLetterCreateView(CreateView):
 class NewsLetterDetailView(DetailView):
     model = NewsLetter
 
+
 class NewsLetterDeleteView(DeleteView):
     model = NewsLetter
     template_name = 'newsapp/uni_delete.html'
@@ -67,8 +68,13 @@ class NewsLetterDeleteView(DeleteView):
     extra_context = {
         'title': 'Удаление рассылки',
         'title_card': 'рассылку',
-        'title_href': {'url':'newsapp:newsletter_edit'},
+        'title_href': {'url': 'newsapp:newsletter_edit'},
     }
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        NewsAppScheduler.job_delete(self.object.pk)
+        super(NewsLetterDeleteView,self).delete(*args, **kwargs)
 
 # Клиенты ------------------------
 class ClientListView(ListView):
@@ -78,6 +84,7 @@ class ClientListView(ListView):
         'title': 'Клиенты',
         'title_plural': 'клиентов'
     }
+
 
 class ClientUpdateView(UpdateView):
     model = Client
@@ -98,8 +105,9 @@ class ClientDeleteView(DeleteView):
     extra_context = {
         'title': 'Удаление клиента',
         'title_card': 'клиента',
-        'title_href': {'url':'newsapp:client_edit'},
+        'title_href': {'url': 'newsapp:client_edit'},
     }
+
 
 class ClientCreateView(CreateView):
     model = Client
@@ -120,6 +128,7 @@ class MessageListView(ListView):
         'title_plural': 'сообщений'
     }
 
+
 class MessageUpdateView(UpdateView):
     model = Message
     fields = ('title', 'text')
@@ -127,7 +136,7 @@ class MessageUpdateView(UpdateView):
     success_url = reverse_lazy('newsapp:message_list')
     extra_context = {
         'title': 'Сообщениe',
-        'title_href': {'url':'newsapp:message_delete', 'text':'Удалить сообщениe'},
+        'title_href': {'url': 'newsapp:message_delete', 'text': 'Удалить сообщениe'},
         'title_card': 'Редактирование сообщения'
     }
 
@@ -139,13 +148,13 @@ class MessageDeleteView(DeleteView):
     extra_context = {
         'title': 'Удаление сообщения',
         'title_card': 'сообщение',
-        'title_href': {'url':'newsapp:message_edit'},
+        'title_href': {'url': 'newsapp:message_edit'},
     }
 
 
 class MessageCreateView(CreateView):
     model = Message
-    fields = ('__all__')
+    fields = '__all__'
     template_name = 'newsapp/uni_edit.html'
     success_url = reverse_lazy('newsapp:message_list')
     extra_context = {
@@ -154,7 +163,8 @@ class MessageCreateView(CreateView):
     }
 
 
-def change_status(request, pk, page):
+def change_status(request, pk):
+    page = request.GET['page']
     newsletter_item = get_object_or_404(NewsLetter, pk=pk)
     if newsletter_item.status == 'ON':
         newsletter_item.status = 'OFF'
@@ -166,8 +176,3 @@ def change_status(request, pk, page):
     if page == 'detail':
         return redirect(reverse('newsapp:newsletter_view', args=(pk,)))
     return redirect(reverse('newsapp:newsletter_list'))
-
-
-
-
-

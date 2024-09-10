@@ -35,12 +35,12 @@
                                 <li class="list-group-item">
                                     <b class="text-muted">Статус: </b>
                                     {% if object.status == 'ON' %}
-                                    <a href="{% url 'newsapp:status' object.pk 'detail' %}" class="link-success"
+                                    <a href="{% url 'newsapp:status' object.pk %}?page=detail" class="link-success"
                                        data-bs-toggle="tooltip" title="Выключить рассылку">
                                         {{object.get_status_display}}
                                     </a>
                                     {% elif object.status == 'OFF' %}
-                                    <a href="{% url 'newsapp:status' object.pk 'detail' %}" class="link-danger"
+                                    <a href="{% url 'newsapp:status' object.pk %}?page=detail" class="link-danger"
                                        data-bs-toggle="tooltip" title="Включить рассылку">
                                         {{object.get_status_display}}
                                     </a>
