@@ -71,6 +71,10 @@ class NewsLetterDeleteView(DeleteView):
         'title_href': {'url': 'newsapp:newsletter_edit'},
     }
 
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        NewsAppScheduler.job_delete(self.object.pk)
+        super(NewsLetterDeleteView,self).delete(*args, **kwargs)
 
 # Клиенты ------------------------
 class ClientListView(ListView):
@@ -159,7 +163,8 @@ class MessageCreateView(CreateView):
     }
 
 
-def change_status(request, pk, page):
+def change_status(request, pk):
+    page = request.GET['page']
     newsletter_item = get_object_or_404(NewsLetter, pk=pk)
     if newsletter_item.status == 'ON':
         newsletter_item.status = 'OFF'

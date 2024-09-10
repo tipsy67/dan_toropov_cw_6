@@ -1,10 +1,6 @@
-from email.policy import default
-
 from django.db import models
 from django.template.defaultfilters import truncatechars
 from django_apscheduler.models import DjangoJobExecution
-
-from newsapp.src.newsapp_scheduler import NewsAppScheduler
 
 NULLABLE = {'null':True, 'blank':True}
 
@@ -62,7 +58,7 @@ class NewsLetter (models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name= 'Создана')
 
     def __str__(self):
-        return f'{self.name} ({self.first_mailing_at}) {self.message.title}'
+        return f'{self.name} ({self.first_mailing_at}) {self.message}'
 
     class Meta:
         verbose_name = 'Рассылка'
