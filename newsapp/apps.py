@@ -7,5 +7,6 @@ class NewsappConfig(AppConfig):
     verbose_name = 'Рассылки'
 
     def ready(self):
+        import newsapp.signals
         from newsapp.src.newsapp_scheduler import NewsAppScheduler
         NewsAppScheduler.start_scheduler()
