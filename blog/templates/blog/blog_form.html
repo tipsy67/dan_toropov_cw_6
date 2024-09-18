@@ -15,7 +15,7 @@
                     </span>
                     {% if title_href.text %}
                     <span>
-                    <a href="{% url title_href.url object.pk %}" class="link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+                    <a href="{% url title_href.url object.slug %}" class="link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
                         <i class="text-end bi bi-person-plus"></i>
                         {{ title_href.text }}
                     </a>

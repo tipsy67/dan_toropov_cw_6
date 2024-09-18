@@ -1,35 +1,40 @@
 {% extends 'base.html' %}
 
-{% load blog_tags %}
 {% block content %}
+{% load blog_tags %}
 <div id="layoutSidenav_content">
-    <main class="row overflow-auto">
-        <div class="row">
-            <div class="card-group">
-                <div class="card rounded-3 shadow-sm m-1 col">
-                    <div class="card-header py-3">
-                        <h4 class="my-0 fw-normal">{{ object.title }}</h4>
-                    </div>
-                    <div class="card-body">
-                        {% if object.image %}
-                        <img class="card-img-left img-thumbnail" src="{{ object.image|add_media }}">
-                        {% endif %}
-                        <p>
-                            {{ object.content }}
-                        </p>
-                        <p class="text-secondary"><small>
-                            Просмотров {{ object.views_counter }}
-                        </small></p>
 
-                    </div>
-                    <div class="card-footer">
-                        <a type="button" href="{% url 'blog:blog_update' object.slug %}"
-                           class="m-1 w-100 btn btn-lg btn-primary">Редактировать</a>
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">{{ title }}</h1>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card rounded-3 shadow-sm m-1 col">
+                        <div class="card-header py-3">
+                            <h4 class="my-0 fw-normal">{{ object.title }}</h4>
+                        </div>
+                        <div class="card-body">
+                            {% if object.image %}
+                            <img class="card-img-left img-thumbnail" src="{{ object.image|add_media }}">
+                            {% endif %}
+                            <p>
+                                {{ object.content }}
+                            </p>
+                            <p class="text-secondary"><small>
+                                Просмотров {{ object.views_counter }}
+                            </small></p>
+
+                        </div>
+                        <div class="card-footer">
+                            <a type="button" href="{% url 'blog:blog_update' object.slug %}"
+                               class="m-1 w-100 btn btn-lg btn-primary">Редактировать</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </main>
     {% include 'footer.html' %}
+
 </div>
 {% endblock content %}

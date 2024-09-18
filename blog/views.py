@@ -1,5 +1,5 @@
 from django.urls import reverse_lazy, reverse
-from django.views.generic import ListView, CreateView, UpdateView, DetailView
+from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView
 
 from blog.models import Blog
 from blog.utils import sendmail
@@ -7,6 +7,10 @@ from blog.utils import sendmail
 
 class BlogListView(ListView):
     model = Blog
+    extra_context = {
+        'title': 'Блог',
+        'title_plural': 'статей'
+    }
 
     def get_queryset(self):
         return Blog.objects.filter(is_published=True)
@@ -15,7 +19,7 @@ class BlogListView(ListView):
 class BlogCreateView(CreateView):
     model = Blog
     fields = ['title', 'content', 'image', 'is_published']
-    template_name = '/blog/editor.html'
+    template_name = 'blog/blog_form.html'
     extra_context = {
         'title_form': 'Добавить статью'
     }
@@ -25,9 +29,11 @@ class BlogCreateView(CreateView):
 class BlogUpdateView(UpdateView):
     model = Blog
     fields = ['title', 'content', 'image', 'is_published']
-    template_name = 'blog/editor.html'
+    # template_name = 'blog/blog_form.html'
     extra_context = {
-        'title_form': 'Изменить статью'
+        'title': 'Блог',
+        'title_card': 'Редактирование статьи',
+        'title_href': {'url': 'blog:blog_delete', 'text': 'Удалить статью'},
     }
     success_url = reverse_lazy('blog:blog_list')
 
@@ -46,3 +52,12 @@ class BlogDetailView(DetailView):
         if self.object.views_counter == 100:
             sendmail()
         return self.object
+
+class BlogDeleteView(DeleteView):
+    model = Blog
+    success_url = reverse_lazy('blog:blog_list')
+    extra_context = {
+        'title': 'Удаление статьи',
+        'title_card': 'статьи',
+        'title_href': {'url': 'blog:blog_update'},
+    }
