@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">{{ title }}</h1>
+
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between">
+                    <span>
+                    <i class="fas fa-table me-1"></i>
+                    Список рассылок
+                    </span>
+                    <a href="{% url 'newsapp:newsletter_new' %}" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+                        <i class="text-end bi bi-person-plus"></i>
+                        Добавить рассылку
+                    </a>
+                </div>
+                <div class="card-body">
+                    <table id="datatablesSimple">
+                        <thead>
+                        <tr>
+                            <th>Имя</th>
+                            <th>Первая отправка</th>
+                            <th>Периодичность</th>
+                            <th>Статус</th>
+                            <th>Сообщение</th>
+                            <th>Комментарий</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>Имя</th>
+                            <th>Первая отправка</th>
+                            <th>Периодичность</th>
+                            <th>Статус</th>
+                            <th>Сообщение</th>
+                            <th>Комментарий</th>
+                        </tr>
+                        </tfoot>
+                        <tbody>
+                        {% for object in object_list %}
+                        <tr>
+                            <td><a href="{% url 'newsapp:newsletter_view' object.pk %}"
+                            data-bs-toggle="tooltip" title="Редактировать рассылку">{{object.name}}</a> </td>
+                            <td>{{object.first_mailing_at}}</td>
+                            <td class="center">{{object.get_periodic_display}}</td>
+                            <td class="center">
+                                {% if object.status == 'ON' %}
+                                    <a href="{% url 'newsapp:status' object.pk %}?page=list" class="link-success"
+                                    data-bs-toggle="tooltip" title="Выключить рассылку">
+                                    {{object.get_status_display}}
+                                    </a>
+                                {% elif object.status == 'OFF' %}
+                                    <a href="{% url 'newsapp:status' object.pk %}?page=list" class="link-danger"
+                                    data-bs-toggle="tooltip" title="Включить рассылку">
+                                    {{object.get_status_display}}
+                                    </a>
+                                {% else %}
+                                    {{object.get_status_display}}
+                                {% endif %}
+                            </td>
+                            <td>{{object.message}}</td>
+                            <td>{{object.comment|truncatechars:80}}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+{% include 'footer.html' %}
+
+</div>
+{% endblock content %}

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load blog_tags %}
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">{{ title }}</h1>
+
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between">
+                    <span>
+                    <i class="fas fa-table me-1"></i>
+                    Список {{ title_plural }}
+                    </span>
+                    <a href="{% url 'blog:blog_create' %}"
+                       class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+                        <i class="text-end bi bi-person-plus"></i>
+                        Добавить статью
+                    </a>
+                </div>
+                <div>
+                <div class="row m-1 row-cols-1 row-cols-md-3">
+                    {% for object in object_list %}
+                    <div class="card rounded-3 shadow-sm">
+                        <div class="card-header w-100">
+                            <h4 class="my-0 fw-normal">{{ object.title }}</h4>
+                        </div>
+                        <div class="card-body">
+                            <p>
+                                {% if object.image %}
+                                <img class="card-img-left img-thumbnail" src="{{ object.image|add_media }}">
+                                {% endif %}
+                            </p>
+                            <p>
+                                {{ object.short_content }}
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            <a type="button" href="{% url 'blog:blog_detail' object.slug  %}"
+                               class="m-1 w-100 btn btn-lg btn-secondary">Подробнее</a>
+                            <a type="button" href="{% url 'blog:blog_update' object.slug %}"
+                               class="m-1 w-100 btn btn-lg btn-primary">Редактировать</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    {% include 'footer.html' %}
+
+</div>
+{% endblock content %}
+
+
+

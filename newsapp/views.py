@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, UpdateView, CreateView, DeleteView
 
@@ -10,7 +10,7 @@ from newsapp.src.newsapp_scheduler import NewsAppScheduler
 # Рассылки ------------------------
 class NewsLetterListView(ListView):
     model = NewsLetter
-    template_name = 'newsapp/index.html'
+    template_name = 'newsapp/newsletter_list.html'
     extra_context = {
         'title': 'Рассылки'
     }
@@ -176,3 +176,7 @@ def change_status(request, pk):
     if page == 'detail':
         return redirect(reverse('newsapp:newsletter_view', args=(pk,)))
     return redirect(reverse('newsapp:newsletter_list'))
+
+
+def mainpage(request):
+    return render(request, 'newsapp/index.html')
