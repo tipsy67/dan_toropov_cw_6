@@ -43,6 +43,8 @@ INSTALLED_APPS = [
 
     'newsapp',
     'django_apscheduler',
+    'blog',
+
 ]
 
 MIDDLEWARE = [
