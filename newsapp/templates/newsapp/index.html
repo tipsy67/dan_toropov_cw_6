@@ -5,22 +5,34 @@
 <div id="layoutSidenav_content">
     <main>
         <div class="container-fluid px-4">
-            <h1 class="mt-4">{{ title }}</h1>
-
-            <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between">
-                    <span>
-                    <i class="fas fa-table me-1"></i>
-                    Список {{ title_plural }}
-                    </span>
-<!--                    <a href="#" class="btn btn-outline-primary">-->
-                    <a href="{% url 'newsapp:client_new' %}" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
-                        <i class="text-end bi bi-person-plus"></i>
-                        Добавить клиента
-                    </a>
+            <h1 class="mt-4">Главная страница {{ title }}</h1>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-pie me-1"></i>
+                            Pie Chart Example
+                        </div>
+                        <div class="card-body">
+                            <canvas id="myPieChart" width="100%" height="50"></canvas>
+                        </div>
+                        <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    Main page
+                <div class="col-lg-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-pie me-1"></i>
+                            Pie Chart Example
+                        </div>
+                        <div class="card-body">
+                            <canvas id="myPieChart" width="100%" height="50"></canvas>
+
+
+                        </div>
+
+                        <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -28,4 +40,5 @@
     {% include 'footer.html' %}
 
 </div>
+
 {% endblock content %}

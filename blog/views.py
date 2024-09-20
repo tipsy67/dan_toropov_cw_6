@@ -19,9 +19,10 @@ class BlogListView(ListView):
 class BlogCreateView(CreateView):
     model = Blog
     fields = ['title', 'content', 'image', 'is_published']
-    template_name = 'blog/blog_form.html'
+    # template_name = 'blog/blog_form.html'
     extra_context = {
-        'title_form': 'Добавить статью'
+        'title': 'Блог',
+        'title_card': 'Добавление статьи',
     }
     success_url = reverse_lazy('blog:blog_list')
 
