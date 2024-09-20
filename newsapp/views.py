@@ -1,3 +1,5 @@
+import json
+from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, UpdateView, CreateView, DeleteView
@@ -179,4 +181,8 @@ def change_status(request, pk):
 
 
 def mainpage(request):
-    return render(request, 'newsapp/index.html')
+    dataset = {
+      "data": [43,62],
+      "backgroundColor": ['#ffc107', '#28a745'],
+    }
+    return render(request, 'newsapp/index.html', {'data_set': [143,62]})
