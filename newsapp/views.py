@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, UpdateView, CreateView, DeleteView
 
+from blog.models import Blog
 from newsapp.forms import NewsLetterForm
 from newsapp.models import NewsLetter, Client, Message
 from newsapp.src.newsapp_scheduler import NewsAppScheduler
@@ -181,8 +182,20 @@ def change_status(request, pk):
 
 
 def mainpage(request):
-    dataset = {
-      "data": [43,62],
-      "backgroundColor": ['#ffc107', '#28a745'],
+
+    blog_set = Blog.objects.filter(is_published=True).order_by('?')
+    object_list = blog_set[:3]
+
+    active_newsletter = NewsLetter.objects.filter(status='ON').count()
+    disable_newsletter = NewsLetter.objects.filter(status='OFF').count()
+    total_newsletter = NewsLetter.objects.count()
+
+    total_clients = Client.objects.values('email').distinct().count()
+
+    context = {
+        "data_set": [disable_newsletter, active_newsletter],
+        "total_newsletter": total_newsletter,
+        "object_list": object_list,
+        "total_clients": total_clients
     }
-    return render(request, 'newsapp/index.html', {'data_set': [143,62]})
+    return render(request, 'newsapp/index.html', context)

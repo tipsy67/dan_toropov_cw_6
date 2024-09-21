@@ -1,3 +1,5 @@
+import random
+
 from django.db import models
 from django.template.defaultfilters import truncatechars
 from pytils.translit import slugify
@@ -29,3 +31,4 @@ class Blog(models.Model):
         if not self.pk:
             self.slug = slugify(self.title)
         super(Blog,self).save(*args, **kwargs)
+
