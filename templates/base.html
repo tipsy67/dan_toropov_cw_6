@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load static %}
+{% load blog_tags %}
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -22,11 +23,11 @@
             class="fas fa-bars"></i></button>
     <!-- Navbar Search-->
     <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-<!--        <div class="input-group">-->
-<!--            <input class="form-control" type="text" placeholder="Поиск ..." aria-label="Поиск ..."-->
-<!--                   aria-describedby="btnNavbarSearch"/>-->
-<!--            <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>-->
-<!--        </div>-->
+        <!--        <div class="input-group">-->
+        <!--            <input class="form-control" type="text" placeholder="Поиск ..." aria-label="Поиск ..."-->
+        <!--                   aria-describedby="btnNavbarSearch"/>-->
+        <!--            <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>-->
+        <!--        </div>-->
     </form>
     <!-- Navbar-->
     <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
@@ -34,12 +35,30 @@
             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown"
                aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="#!">Settings</a></li>
-                <li><a class="dropdown-item" href="#!">Activity Log</a></li>
-                <li><hr class="dropdown-divider"/></li>
-                <li><a class="dropdown-item" href="#!">Logout</a></li>
-            </ul>
+                {% if user.is_authenticated %}
+                <li><a class="dropdown-item" href="{% url 'users:profile' %}">Профиль</a></li>
+                <!--                <li><a class="dropdown-item" href="#!">Activity Log</a></li>-->
+                <li>
+                    <hr class="dropdown-divider"/>
+                </li>
+                <li>
+                <li>
+                    <form method="post" action="{% url 'users:logout' %}">
+                        {% csrf_token %}
+                        <button class="dropdown-item" type="submit">Выйти</button>
+                    </form>
+                </li>
         </li>
+        {% else %}
+        <li><a class="dropdown-item" href="{% url 'users:register' %}">Регистрация</a></li>
+        <!--                <li><a class="dropdown-item" href="#!">Activity Log</a></li>-->
+        <li>
+            <hr class="dropdown-divider"/>
+        </li>
+        <li><a class="dropdown-item" href="{% url 'users:login' %}">Войти</a></li>
+        {% endif %}
+    </ul>
+    </li>
     </ul>
 </nav>
 <div id="layoutSidenav">
@@ -67,8 +86,11 @@
                 </div>
             </div>
             <div class="sb-sidenav-footer">
+                {% if user.is_authenticated %}
                 <div class="small">Вы зашли как:</div>
-                Start Bootstrap
+                <img src="{{ user.avatar|add_media }}" alt="" width="32" height="32" class="rounded-circle me-2">
+                {{user.username}}
+                {% endif %}
             </div>
         </nav>
     </div>
@@ -81,11 +103,12 @@
         crossorigin="anonymous"></script>
 <script src={% static "newsapp/js/scripts.js" %}></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"
+        crossorigin="anonymous"></script>
 <script src={% static "newsapp/js/datatables-simple-demo.js" %}></script>
 
 <script>
-  let DataSet = {{ data_set|escapejs }};
+    let DataSet = {{ data_set|escapejs }};
 </script>
 <script src={% static "newsapp/assets/demo/chart-pie-demo.js" %}></script>
 <script src={% static "newsapp/assets/demo/chart-area-demo.js" %}></script>

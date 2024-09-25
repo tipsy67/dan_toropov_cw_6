@@ -2,7 +2,7 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView
 
 from blog.models import Blog
-from blog.utils import sendmail
+
 
 
 class BlogListView(ListView):
@@ -50,8 +50,7 @@ class BlogDetailView(DetailView):
         self.object = super().get_object(queryset)
         self.object.views_counter += 1
         self.object.save()
-        if self.object.views_counter == 100:
-            sendmail()
+
         return self.object
 
 class BlogDeleteView(DeleteView):

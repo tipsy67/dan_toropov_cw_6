@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="layoutSidenav_content">
+
+    <main class="row overflow-auto">
+        <div class="d-flex justify-content-center">
+            <div class="card rounded-3 shadow-sm m-1 col-5">
+                <div class="card-header py-3">
+                    <h4 class="my-0 fw-normal">Введите информацию о пользователе</h4>
+                </div>
+                <form method="post" action="" enctype="multipart/form-data">
+                    <div class="card-body">
+                        {% csrf_token %}
+                        <div class="form-error">{{ form.non_field_errors }}</div>
+                        {% for f in form %}
+                        <p>
+                            <label class="col-sm-2 col-form-label align-top" for="{{ f.id_for_label }}">
+                                {{ f.label }}</label>
+                            {{ f }}
+                        </p>
+                        <div class="form-error">{{ f.errors }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="card-footer">
+                        {% if user.is_authenticated %}
+                        <button type="submit" class="my-2 w-100 btn btn-lg btn-primary">Сохранить</button>
+                        {% else %}
+                        {% if create_user %}
+                        <button type="submit" class="my-2 w-100 btn btn-lg btn-primary">Зарегистрировать</button>
+                        {% else %}
+                        <button type="submit" class="my-2 w-100 btn btn-lg btn-primary" name="login">Войти</button>
+                        <button type="submit" class="my-2 w-100 btn btn-secondary" name="recovery">
+                            Восстановить пароль
+                        </button>
+                        {% endif %}
+                        {% endif %}
+                        {% if footer_url %}
+                        <a type="button" href="{% url footer_url object.pk %}"
+                           class="my-2 w-100 btn btn-lg btn-secondary">Удалить</a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+    {% include 'footer.html' %}
+
+</div>
+{% endblock content %}
