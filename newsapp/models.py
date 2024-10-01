@@ -2,6 +2,8 @@ from django.db import models
 from django.template.defaultfilters import truncatechars
 from django_apscheduler.models import DjangoJobExecution
 
+from users.models import User
+
 NULLABLE = {'null':True, 'blank':True}
 
 class Client(models.Model):
@@ -56,6 +58,8 @@ class NewsLetter (models.Model):
     clients = models.ManyToManyField('Client', related_name='newsletters',verbose_name='Клиенты')
     message = models.ForeignKey('Message', on_delete=models.PROTECT, related_name='newsletters', verbose_name= 'Сообщение')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name= 'Создана')
+    owner = models.ForeignKey(to=User, on_delete=models.SET_NULL, **NULLABLE,
+                                 related_name='products', verbose_name='Владелец')
 
     def __str__(self):
         return f'{self.name} ({self.first_mailing_at}) {self.message}'
