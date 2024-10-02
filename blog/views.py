@@ -1,6 +1,8 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView
 
+from blog.forms import BlogForm, BlogContentForm
 from blog.models import Blog
 
 
@@ -16,7 +18,7 @@ class BlogListView(ListView):
         return Blog.objects.filter(is_published=True)
 
 
-class BlogCreateView(CreateView):
+class BlogCreateView(LoginRequiredMixin, CreateView):
     model = Blog
     fields = ['title', 'content', 'image', 'is_published']
     # template_name = 'blog/blog_form.html'
@@ -26,10 +28,16 @@ class BlogCreateView(CreateView):
     }
     success_url = reverse_lazy('blog:blog_list')
 
+    def form_valid(self, form):
+        if form.is_valid():
+            blog = form.save()
+            blog.owner = self.request.user
+            blog.save()
+        return super().form_valid(form)
 
-class BlogUpdateView(UpdateView):
+class BlogUpdateView(UserPassesTestMixin, UpdateView):
     model = Blog
-    fields = ['title', 'content', 'image', 'is_published']
+    form_class = BlogForm
     # template_name = 'blog/blog_form.html'
     extra_context = {
         'title': 'Блог',
@@ -37,6 +45,19 @@ class BlogUpdateView(UpdateView):
         'title_href': {'url': 'blog:blog_delete', 'text': 'Удалить статью'},
     }
     success_url = reverse_lazy('blog:blog_list')
+
+    def get_form_class(self):
+        if self.request.user.has_perm('blog.change_blog') or self.object.owner == self.request.user:
+            return BlogForm
+
+        return BlogContentForm
+
+
+    def test_func(self):
+        return (self.request.user.has_perm('blog.change_blog') or
+                self.request.user == self.get_object().owner or
+                self.request.user.is_content_manager)
+
 
     def get_success_url(self):
         return reverse('blog:blog_detail', args=(self.kwargs['slug'],))
@@ -53,7 +74,7 @@ class BlogDetailView(DetailView):
 
         return self.object
 
-class BlogDeleteView(DeleteView):
+class BlogDeleteView(UserPassesTestMixin, DeleteView):
     model = Blog
     success_url = reverse_lazy('blog:blog_list')
     extra_context = {
@@ -61,3 +82,6 @@ class BlogDeleteView(DeleteView):
         'title_card': 'статьи',
         'title_href': {'url': 'blog:blog_update'},
     }
+
+    def test_func(self):
+        return self.request.user.has_perm('blog.delete_blog') or self.request.user == self.get_object().owner

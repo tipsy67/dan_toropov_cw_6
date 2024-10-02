@@ -12,6 +12,8 @@ class Client(models.Model):
     patronymic = models.CharField(max_length=50, verbose_name ='Отчество', **NULLABLE)
     email = models.EmailField(verbose_name='Почта')
     comment = models.TextField(**NULLABLE, verbose_name='Комментарий')
+    owner = models.ForeignKey(to=User, on_delete=models.SET_NULL, **NULLABLE,
+                              related_name='clients', verbose_name='Владелец')
 
     def __str__(self):
         patronymic = ''
@@ -29,6 +31,8 @@ class Message(models.Model):
     text = models.TextField(verbose_name='Текст')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Создано')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Изменено')
+    owner = models.ForeignKey(to=User, on_delete=models.SET_NULL, **NULLABLE,
+                              related_name='messages', verbose_name='Владелец')
 
     def __str__(self):
         return f'{self.title} ({truncatechars(self.text, 50)})'

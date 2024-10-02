@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">{{ title }}</h1>
+
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between">
+                    <span>
+                    <i class="fas fa-table me-1"></i>
+                    Список пользователей
+                    </span>
+                </div>
+                <div class="card-body">
+                    <table id="datatablesSimple">
+                        <thead>
+                        <tr>
+                            <th>Ник</th>
+                            <th>ФИО</th>
+                            <th>Почта</th>
+                            <th>Статус</th>
+                            <th>Последний вход</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>Ник</th>
+                            <th>ФИО</th>
+                            <th>Почта</th>
+                            <th>Статус</th>
+                            <th>Последний вход</th>
+                        </tr>
+                        </tfoot>
+                        <tbody>
+                        {% for object in object_list %}
+                        {% if not object.is_superuser %}
+                        <tr>
+                            <td class="center">{{object.username}}</td>
+                            <td class="center">{{object.last_name}} {{object.first_name}}</td>
+                            <td class="center">{{object.email}}</td>
+                            <td class="center">
+                                {% if object.is_active %}
+                                    <a href="{% url 'users:user_status' object.pk %}" class="link-success"
+                                    data-bs-toggle="tooltip" title="Заблокировать пользователя">
+                                    активен
+                                    </a>
+                                {% elif not object.is_active %}
+                                    <a href="{% url 'users:user_status' object.pk %}" class="link-danger"
+                                    data-bs-toggle="tooltip" title="Разблокировать пользователя">
+                                    заблокирован
+                                    </a>
+                                {% else %}
+                                    {{object.is_active}}
+                                {% endif %}
+                            </td>
+                            <td>{{object.last_login}}</td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+{% include 'footer.html' %}
+
+</div>
+{% endblock content %}

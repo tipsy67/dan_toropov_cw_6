@@ -55,8 +55,10 @@
                     <div class="card-footer">
                         <a type="button" href="{% url 'blog:blog_detail' object.slug  %}"
                            class="m-1 w-100 btn btn-lg btn-secondary">Подробнее</a>
+                        {% if user.is_content_manager or blog.owner == user %}
                         <a type="button" href="{% url 'blog:blog_update' object.slug %}"
                            class="m-1 w-100 btn btn-lg btn-primary">Редактировать</a>
+                        {% endif %}
                     </div>
                 </div>
                 {% endfor %}

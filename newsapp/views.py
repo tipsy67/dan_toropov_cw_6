@@ -1,4 +1,7 @@
 import json
+
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
@@ -11,7 +14,7 @@ from newsapp.src.newsapp_scheduler import NewsAppScheduler
 
 
 # Рассылки ------------------------
-class NewsLetterListView(ListView):
+class NewsLetterListView(LoginRequiredMixin, ListView):
     model = NewsLetter
     template_name = 'newsapp/newsletter_list.html'
     extra_context = {
@@ -19,7 +22,7 @@ class NewsLetterListView(ListView):
     }
 
 
-class NewsLetterUpdateView(UpdateView):
+class NewsLetterUpdateView(LoginRequiredMixin, UpdateView):
     model = NewsLetter
     form_class = NewsLetterForm
     template_name = 'newsapp/uni_edit.html'
@@ -41,7 +44,7 @@ class NewsLetterUpdateView(UpdateView):
         return super().form_valid(form)
 
 
-class NewsLetterCreateView(CreateView):
+class NewsLetterCreateView(LoginRequiredMixin, CreateView):
     model = NewsLetter
     form_class = NewsLetterForm
     template_name = 'newsapp/uni_edit.html'
@@ -60,11 +63,11 @@ class NewsLetterCreateView(CreateView):
         return super().form_valid(form)
 
 
-class NewsLetterDetailView(DetailView):
+class NewsLetterDetailView(LoginRequiredMixin, DetailView):
     model = NewsLetter
 
 
-class NewsLetterDeleteView(DeleteView):
+class NewsLetterDeleteView(LoginRequiredMixin, DeleteView):
     model = NewsLetter
     template_name = 'newsapp/uni_delete.html'
     success_url = reverse_lazy('newsapp:newsletter_list')
@@ -80,7 +83,7 @@ class NewsLetterDeleteView(DeleteView):
         super(NewsLetterDeleteView,self).delete(*args, **kwargs)
 
 # Клиенты ------------------------
-class ClientListView(ListView):
+class ClientListView(LoginRequiredMixin, ListView):
     model = Client
     # template_name = 'newsapp/other_list.html'
     extra_context = {
@@ -89,7 +92,7 @@ class ClientListView(ListView):
     }
 
 
-class ClientUpdateView(UpdateView):
+class ClientUpdateView(LoginRequiredMixin, UpdateView):
     model = Client
     fields = ('first_name', 'last_name', 'patronymic', 'email', 'comment')
     template_name = 'newsapp/uni_edit.html'
@@ -101,7 +104,7 @@ class ClientUpdateView(UpdateView):
     }
 
 
-class ClientDeleteView(DeleteView):
+class ClientDeleteView(LoginRequiredMixin, DeleteView):
     model = Client
     template_name = 'newsapp/uni_delete.html'
     success_url = reverse_lazy('newsapp:client_list')
@@ -112,7 +115,7 @@ class ClientDeleteView(DeleteView):
     }
 
 
-class ClientCreateView(CreateView):
+class ClientCreateView(LoginRequiredMixin, CreateView):
     model = Client
     fields = ('first_name', 'last_name', 'patronymic', 'email', 'comment')
     template_name = 'newsapp/uni_edit.html'
@@ -124,7 +127,7 @@ class ClientCreateView(CreateView):
 
 
 # Сообщения ------------------------
-class MessageListView(ListView):
+class MessageListView(LoginRequiredMixin, ListView):
     model = Message
     extra_context = {
         'title': 'Сообщения',
@@ -132,7 +135,7 @@ class MessageListView(ListView):
     }
 
 
-class MessageUpdateView(UpdateView):
+class MessageUpdateView(LoginRequiredMixin, UpdateView):
     model = Message
     fields = ('title', 'text')
     template_name = 'newsapp/uni_edit.html'
@@ -144,7 +147,7 @@ class MessageUpdateView(UpdateView):
     }
 
 
-class MessageDeleteView(DeleteView):
+class MessageDeleteView(LoginRequiredMixin, DeleteView):
     model = Message
     template_name = 'newsapp/uni_delete.html'
     success_url = reverse_lazy('newsapp:message_list')
@@ -155,7 +158,7 @@ class MessageDeleteView(DeleteView):
     }
 
 
-class MessageCreateView(CreateView):
+class MessageCreateView(LoginRequiredMixin, CreateView):
     model = Message
     fields = '__all__'
     template_name = 'newsapp/uni_edit.html'
@@ -165,7 +168,7 @@ class MessageCreateView(CreateView):
         'title_card': 'Добавление сообщения',
     }
 
-
+@login_required
 def change_status(request, pk):
     page = request.GET['page']
     newsletter_item = get_object_or_404(NewsLetter, pk=pk)

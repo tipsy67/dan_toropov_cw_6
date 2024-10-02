@@ -2,12 +2,14 @@ import secrets
 from pyexpat.errors import messages
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, get_object_or_404, redirect
 
 from django.contrib.auth.views import LoginView as BaseLoginView
 from django.urls import reverse_lazy, reverse
-from django.views.generic import UpdateView, CreateView
+from django.views.generic import UpdateView, CreateView, ListView
 
 from newsapp.src.utils import sendmail
 from users.forms import ProfileUpdateForm, CreateUserForm, LoginUserForm
@@ -45,6 +47,15 @@ class LoginView(BaseLoginView):
                 messages.warning(self.request, f'Пользователя {email} не существует')
         return super().form_invalid(form)
 
+
+class UserListView(UserPassesTestMixin, ListView):
+    model = get_user_model()
+    extra_context = {
+        'title': 'Пользователи'
+    }
+
+    def test_func(self):
+        return self.request.user.is_manager
 
 class ProfileUpdateView(UpdateView):
     model =  get_user_model()
@@ -91,3 +102,13 @@ def confirm_user(request, token):
     user.save()
 
     return redirect(reverse('users:login'))
+
+@user_passes_test(lambda u: u.is_manager)
+def change_status(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    if user.is_active:
+        user.is_active = False
+    elif not user.is_active == 'OFF':
+        user.is_active = True
+    user.save()
+    return redirect(reverse('users:user_list'))

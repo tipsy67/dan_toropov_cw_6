@@ -20,3 +20,10 @@ class User (AbstractUser):
 
         return password
 
+    @property
+    def is_manager(self):
+        return True
+
+    @property
+    def is_content_manager(self):
+        return self.has_perm('blog.can_edit_content')

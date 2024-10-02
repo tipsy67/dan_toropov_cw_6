@@ -4,6 +4,8 @@ from django.db import models
 from django.template.defaultfilters import truncatechars
 from pytils.translit import slugify
 
+from users.models import User, NULLABLE
+
 
 class Blog(models.Model):
     title = models.CharField(max_length=100, verbose_name='Заголовок')
@@ -14,11 +16,16 @@ class Blog(models.Model):
     is_published = models.BooleanField(default=False, verbose_name='Признак публикации')
     views_counter = models.IntegerField(default=0, verbose_name='Количество просмотров')
     content = models.TextField(verbose_name='Содержимое')
+    owner = models.ForeignKey(to=User, on_delete=models.SET_NULL, **NULLABLE,
+                                 related_name='blogs', verbose_name='Владелец')
 
     class Meta:
         verbose_name = 'Статья'
         verbose_name_plural = 'Статьи'
         ordering = ['-created_at']
+        permissions = [
+            ('can_edit_content' , 'Can edit content')
+        ]
 
     def __str__(self):
         return f'{self.title}'
