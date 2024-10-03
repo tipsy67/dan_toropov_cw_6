@@ -12,6 +12,10 @@ class User (AbstractUser):
     phone = models.CharField(max_length=30, **NULLABLE, verbose_name='телефон')
     token = models.CharField(max_length=100, **NULLABLE, verbose_name='токен')
 
+    class Meta:
+        permissions = [
+            ('can_change_status', 'Can change status')
+        ]
 
     @staticmethod
     def generate_password(length: int):
@@ -20,10 +24,7 @@ class User (AbstractUser):
 
         return password
 
-    @property
-    def is_manager(self):
-        return True
 
     @property
     def is_content_manager(self):
-        return self.has_perm('blog.can_edit_content')
+        return self.has_perm('blog.can_publish_article')

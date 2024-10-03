@@ -1,22 +1,19 @@
 import secrets
 from pyexpat.errors import messages
 
+from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import render, get_object_or_404, redirect
-
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.views import LoginView as BaseLoginView
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import UpdateView, CreateView, ListView
 
 from newsapp.src.utils import sendmail
 from users.forms import ProfileUpdateForm, CreateUserForm, LoginUserForm
-
 from users.models import User
-
-from django.contrib import messages
 
 
 class LoginView(BaseLoginView):
@@ -48,16 +45,14 @@ class LoginView(BaseLoginView):
         return super().form_invalid(form)
 
 
-class UserListView(UserPassesTestMixin, ListView):
+class UserListView(PermissionRequiredMixin, ListView):
     model = get_user_model()
     extra_context = {
         'title': 'Пользователи'
     }
+    permission_required = 'users.view_user'
 
-    def test_func(self):
-        return self.request.user.is_manager
-
-class ProfileUpdateView(UpdateView):
+class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     model =  get_user_model()
     form_class = ProfileUpdateForm
     template_name = 'users/user_form.html'
@@ -103,7 +98,7 @@ def confirm_user(request, token):
 
     return redirect(reverse('users:login'))
 
-@user_passes_test(lambda u: u.is_manager)
+@permission_required('users.can_change_status', raise_exception=True)
 def change_status(request, pk):
     user = get_object_or_404(User, pk=pk)
     if user.is_active:

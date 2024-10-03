@@ -72,6 +72,9 @@ class NewsLetter (models.Model):
         verbose_name = 'Рассылка'
         verbose_name_plural = 'Рассылки'
         ordering = ['created_at', 'name']
+        permissions = [
+            ('can_change_status', 'Can change status')
+        ]
 
     def get_history(self):
         return DjangoJobExecution.objects.filter(job_id=str(self.pk))

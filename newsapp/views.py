@@ -1,7 +1,7 @@
 import json
 
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
@@ -21,8 +21,14 @@ class NewsLetterListView(LoginRequiredMixin, ListView):
         'title': 'Рассылки'
     }
 
+    def get_queryset(self):
+        if self.request.user.has_perm('newsapp.view_newsletter'):
+            return NewsLetter.objects.all()
 
-class NewsLetterUpdateView(LoginRequiredMixin, UpdateView):
+        return NewsLetter.objects.filter(owner=self.request.user)
+
+
+class NewsLetterUpdateView(UserPassesTestMixin, UpdateView):
     model = NewsLetter
     form_class = NewsLetterForm
     template_name = 'newsapp/uni_edit.html'
@@ -32,6 +38,11 @@ class NewsLetterUpdateView(LoginRequiredMixin, UpdateView):
         'title_card': 'Редактирование рассылки',
         'title_href': {'url': 'newsapp:newsletter_delete', 'text': 'Удалить рассылку'},
     }
+
+
+    def test_func(self):
+        return self.request.user.has_perm('newsapp.change_newsletter') or self.request.user == self.get_object().owner
+
 
     def form_valid(self, form):
         if form.is_valid():
@@ -54,20 +65,27 @@ class NewsLetterCreateView(LoginRequiredMixin, CreateView):
         'title_card': 'Добавление рассылки',
     }
 
+
     def form_valid(self, form):
         if form.is_valid():
             new_obj = form.save()
+            new_obj.owner = self.request.user
+            new_obj.save()
             NewsAppScheduler.job_new(new_obj)
             NewsAppScheduler.job_off(new_obj.pk)
 
         return super().form_valid(form)
 
 
-class NewsLetterDetailView(LoginRequiredMixin, DetailView):
+class NewsLetterDetailView(UserPassesTestMixin, DetailView):
     model = NewsLetter
 
 
-class NewsLetterDeleteView(LoginRequiredMixin, DeleteView):
+    def test_func(self):
+        return self.request.user.has_perm('newsapp.view_newsletter') or self.request.user == self.get_object().owner
+
+
+class NewsLetterDeleteView(UserPassesTestMixin, DeleteView):
     model = NewsLetter
     template_name = 'newsapp/uni_delete.html'
     success_url = reverse_lazy('newsapp:newsletter_list')
@@ -76,6 +94,11 @@ class NewsLetterDeleteView(LoginRequiredMixin, DeleteView):
         'title_card': 'рассылку',
         'title_href': {'url': 'newsapp:newsletter_edit'},
     }
+
+
+    def test_func(self):
+        return self.request.user.has_perm('newsapp.delete_newsletter') or self.request.user == self.get_object().owner
+
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -91,10 +114,16 @@ class ClientListView(LoginRequiredMixin, ListView):
         'title_plural': 'клиентов'
     }
 
+    def get_queryset(self):
+        if self.request.user.has_perm('newsapp.view_client'):
+            return Client.objects.all()
 
-class ClientUpdateView(LoginRequiredMixin, UpdateView):
+        return Client.objects.filter(owner=self.request.user)
+
+
+class ClientUpdateView(UserPassesTestMixin, UpdateView):
     model = Client
-    fields = ('first_name', 'last_name', 'patronymic', 'email', 'comment')
+    fields = ['first_name', 'last_name', 'patronymic', 'email', 'comment']
     template_name = 'newsapp/uni_edit.html'
     success_url = reverse_lazy('newsapp:client_list')
     extra_context = {
@@ -104,7 +133,12 @@ class ClientUpdateView(LoginRequiredMixin, UpdateView):
     }
 
 
-class ClientDeleteView(LoginRequiredMixin, DeleteView):
+    def test_func(self):
+        return self.request.user.has_perm('newsapp.change_client') or self.request.user == self.get_object().owner
+
+
+
+class ClientDeleteView(UserPassesTestMixin, DeleteView):
     model = Client
     template_name = 'newsapp/uni_delete.html'
     success_url = reverse_lazy('newsapp:client_list')
@@ -113,6 +147,10 @@ class ClientDeleteView(LoginRequiredMixin, DeleteView):
         'title_card': 'клиента',
         'title_href': {'url': 'newsapp:client_edit'},
     }
+
+
+    def test_func(self):
+        return self.request.user.has_perm('newsapp.delete_client') or self.request.user == self.get_object().owner
 
 
 class ClientCreateView(LoginRequiredMixin, CreateView):
@@ -125,6 +163,12 @@ class ClientCreateView(LoginRequiredMixin, CreateView):
         'title_card': 'Добавление клиента',
     }
 
+    def form_valid(self, form):
+        if form.is_valid():
+            client = form.save()
+            client.owner = self.request.user
+            client.save()
+        return super().form_valid(form)
 
 # Сообщения ------------------------
 class MessageListView(LoginRequiredMixin, ListView):
@@ -135,7 +179,14 @@ class MessageListView(LoginRequiredMixin, ListView):
     }
 
 
-class MessageUpdateView(LoginRequiredMixin, UpdateView):
+    def get_queryset(self):
+        if self.request.user.has_perm('newsapp.view_message'):
+            return Message.objects.all()
+
+        return Message.objects.filter(owner=self.request.user)
+
+
+class MessageUpdateView(UserPassesTestMixin, UpdateView):
     model = Message
     fields = ('title', 'text')
     template_name = 'newsapp/uni_edit.html'
@@ -147,7 +198,11 @@ class MessageUpdateView(LoginRequiredMixin, UpdateView):
     }
 
 
-class MessageDeleteView(LoginRequiredMixin, DeleteView):
+    def test_func(self):
+        return self.request.user.has_perm('newsapp.change_message') or self.request.user == self.get_object().owner
+
+
+class MessageDeleteView(UserPassesTestMixin, DeleteView):
     model = Message
     template_name = 'newsapp/uni_delete.html'
     success_url = reverse_lazy('newsapp:message_list')
@@ -157,16 +212,28 @@ class MessageDeleteView(LoginRequiredMixin, DeleteView):
         'title_href': {'url': 'newsapp:message_edit'},
     }
 
+    def test_func(self):
+        return self.request.user.has_perm('newsapp.delete_message') or self.request.user == self.get_object().owner
+
 
 class MessageCreateView(LoginRequiredMixin, CreateView):
     model = Message
-    fields = '__all__'
+    fields = ('title', 'text')
     template_name = 'newsapp/uni_edit.html'
     success_url = reverse_lazy('newsapp:message_list')
     extra_context = {
         'title': 'Сообщениe',
         'title_card': 'Добавление сообщения',
     }
+
+
+    def form_valid(self, form):
+        if form.is_valid():
+            message = form.save()
+            message.owner = self.request.user
+            message.save()
+        return super().form_valid(form)
+
 
 @login_required
 def change_status(request, pk):

@@ -24,7 +24,7 @@ class Blog(models.Model):
         verbose_name_plural = 'Статьи'
         ordering = ['-created_at']
         permissions = [
-            ('can_edit_content' , 'Can edit content')
+            ('can_publish_article' , 'Can publish article')
         ]
 
     def __str__(self):

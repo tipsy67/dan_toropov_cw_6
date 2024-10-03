@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import CheckboxSelectMultiple
 
-from newsapp.models import NewsLetter
+from newsapp.models import NewsLetter, Client, Message
 
 
 # class DateTimePicker(forms.DateTimeInput):
@@ -13,10 +13,17 @@ class NewsLetterForm (forms.ModelForm):
 
     class Meta:
         model = NewsLetter
-        exclude = ('status',)
+        exclude = ('status','owner')
         widgets = {
             'first_mailing_at': forms.DateTimeInput(format='%Y-%m-%dT%H:%M', attrs={'type': 'datetime-local'}),
             # 'first_mailing_at': DateTimePicker(),
             'clients':CheckboxSelectMultiple
         }
+
+
+    def __init__(self, *args, **kwargs):
+        super(NewsLetterForm, self).__init__(*args, **kwargs)
+        owner = kwargs['instance'].owner
+        self.fields['clients'].queryset = Client.objects.filter(owner=owner)
+        self.fields['message'].queryset = Message.objects.filter(owner=owner)
 
