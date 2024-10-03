@@ -11,7 +11,11 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os.path
 from pathlib import Path
+
+from django.conf.global_settings import LOGIN_REDIRECT_URL, LOGOUT_REDIRECT_URL, LOGIN_URL
 from dotenv import load_dotenv
+
+import users
 
 load_dotenv()
 
@@ -44,6 +48,7 @@ INSTALLED_APPS = [
     'newsapp',
     'django_apscheduler',
     'blog',
+    'users',
 
 ]
 
@@ -135,3 +140,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+AUTH_USER_MODEL = 'users.User'
+
+LOGIN_REDIRECT_URL = 'newsapp:home'
+LOGOUT_REDIRECT_URL = 'newsapp:home'
+LOGIN_URL = 'users:login'

@@ -27,6 +27,9 @@
                             <th>Статус</th>
                             <th>Сообщение</th>
                             <th>Комментарий</th>
+                            {% if perms.newsapp.view_newsletter %}
+                            <th>Владелец</th>
+                            {% endif %}
                         </tr>
                         </thead>
                         <tfoot>
@@ -37,6 +40,9 @@
                             <th>Статус</th>
                             <th>Сообщение</th>
                             <th>Комментарий</th>
+                            {% if perms.newsapp.view_newsletter %}
+                            <th>Владелец</th>
+                            {% endif %}
                         </tr>
                         </tfoot>
                         <tbody>
@@ -61,8 +67,11 @@
                                     {{object.get_status_display}}
                                 {% endif %}
                             </td>
-                            <td>{{object.message}}</td>
+                            <td>{{object.message|truncatechars:30}}</td>
                             <td>{{object.comment|truncatechars:80}}</td>
+                            {% if perms.newsapp.view_newsletter %}
+                            <td>{{object.owner}}</td>
+                            {% endif %}
                         </tr>
                         {% endfor %}
                         </tbody>

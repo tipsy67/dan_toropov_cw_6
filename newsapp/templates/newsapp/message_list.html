@@ -26,6 +26,9 @@
                             <th>Текст</th>
                             <th>Создано</th>
                             <th>Изменено</th>
+                            {% if perms.newsapp.view_message %}
+                            <th>Владелец</th>
+                            {% endif %}
                         </tr>
                         </thead>
                         <tfoot>
@@ -34,6 +37,9 @@
                             <th>Текст</th>
                             <th>Создано</th>
                             <th>Изменено</th>
+                            {% if perms.newsapp.view_message %}
+                            <th>Владелец</th>
+                            {% endif %}
                         </tr>
                         </tfoot>
                         <tbody>
@@ -51,9 +57,12 @@
                                    {{object.title}}
                                 </a>
                             </td>
-                            <td>{{object.text|truncatechars:100}}</td>
+                            <td>{{object.text|truncatechars:70}}</td>
                             <td>{{object.created_at}}</td>
                             <td>{{object.updated_at}}</td>
+                            {% if perms.newsapp.view_message %}
+                            <td>{{object.owner}}</td>
+                            {% endif %}
                         </tr>
                         {% endfor %}
                         </tbody>

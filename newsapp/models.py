@@ -2,6 +2,8 @@ from django.db import models
 from django.template.defaultfilters import truncatechars
 from django_apscheduler.models import DjangoJobExecution
 
+from users.models import User
+
 NULLABLE = {'null':True, 'blank':True}
 
 class Client(models.Model):
@@ -10,6 +12,8 @@ class Client(models.Model):
     patronymic = models.CharField(max_length=50, verbose_name ='Отчество', **NULLABLE)
     email = models.EmailField(verbose_name='Почта')
     comment = models.TextField(**NULLABLE, verbose_name='Комментарий')
+    owner = models.ForeignKey(to=User, on_delete=models.SET_NULL, **NULLABLE,
+                              related_name='clients', verbose_name='Владелец')
 
     def __str__(self):
         patronymic = ''
@@ -27,9 +31,11 @@ class Message(models.Model):
     text = models.TextField(verbose_name='Текст')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Создано')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Изменено')
+    owner = models.ForeignKey(to=User, on_delete=models.SET_NULL, **NULLABLE,
+                              related_name='messages', verbose_name='Владелец')
 
     def __str__(self):
-        return f'{self.title} ({truncatechars(self.text, 50)})'
+        return f'{self.title} ({truncatechars(self.text, 70)})'
 
     class Meta:
         verbose_name = 'Сообщение'
@@ -56,6 +62,8 @@ class NewsLetter (models.Model):
     clients = models.ManyToManyField('Client', related_name='newsletters',verbose_name='Клиенты')
     message = models.ForeignKey('Message', on_delete=models.PROTECT, related_name='newsletters', verbose_name= 'Сообщение')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name= 'Создана')
+    owner = models.ForeignKey(to=User, on_delete=models.SET_NULL, **NULLABLE,
+                                 related_name='products', verbose_name='Владелец')
 
     def __str__(self):
         return f'{self.name} ({self.first_mailing_at}) {self.message}'
@@ -64,6 +72,9 @@ class NewsLetter (models.Model):
         verbose_name = 'Рассылка'
         verbose_name_plural = 'Рассылки'
         ordering = ['created_at', 'name']
+        permissions = [
+            ('can_change_status', 'Can change status')
+        ]
 
     def get_history(self):
         return DjangoJobExecution.objects.filter(job_id=str(self.pk))

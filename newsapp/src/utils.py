@@ -5,6 +5,9 @@ from email.mime.text import MIMEText
 
 
 def sendmail(recipients_emails:list, title: str, content:str):
+    """
+    Функция отправки писем
+    """
     smtp_server = "smtp.yandex.ru"
 
 
