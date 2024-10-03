@@ -35,7 +35,7 @@ class Message(models.Model):
                               related_name='messages', verbose_name='Владелец')
 
     def __str__(self):
-        return f'{self.title} ({truncatechars(self.text, 50)})'
+        return f'{self.title} ({truncatechars(self.text, 70)})'
 
     class Meta:
         verbose_name = 'Сообщение'

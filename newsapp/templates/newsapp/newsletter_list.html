@@ -67,7 +67,7 @@
                                     {{object.get_status_display}}
                                 {% endif %}
                             </td>
-                            <td>{{object.message}}</td>
+                            <td>{{object.message|truncatechars:30}}</td>
                             <td>{{object.comment|truncatechars:80}}</td>
                             {% if perms.newsapp.view_newsletter %}
                             <td>{{object.owner}}</td>

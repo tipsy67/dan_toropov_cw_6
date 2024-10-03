@@ -239,13 +239,14 @@ class MessageCreateView(LoginRequiredMixin, CreateView):
 def change_status(request, pk):
     page = request.GET['page']
     newsletter_item = get_object_or_404(NewsLetter, pk=pk)
-    if newsletter_item.status == 'ON':
-        newsletter_item.status = 'OFF'
-        NewsAppScheduler.job_off(pk)
-    elif newsletter_item.status == 'OFF':
-        newsletter_item.status = 'ON'
-        NewsAppScheduler.job_on(pk)
-    newsletter_item.save()
+    if request.user.has_perm('newsapp.can_change_status') or newsletter_item.owner == request.user:
+        if newsletter_item.status == 'ON':
+            newsletter_item.status = 'OFF'
+            NewsAppScheduler.job_off(pk)
+        elif newsletter_item.status == 'OFF':
+            newsletter_item.status = 'ON'
+            NewsAppScheduler.job_on(pk)
+        newsletter_item.save()
     if page == 'detail':
         return redirect(reverse('newsapp:newsletter_view', args=(pk,)))
     return redirect(reverse('newsapp:newsletter_list'))
