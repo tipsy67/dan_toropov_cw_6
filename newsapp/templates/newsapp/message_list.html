@@ -46,7 +46,8 @@
                         {% for object in object_list %}
                         <tr>
                             <td>
-                                <a href="{% url 'newsapp:message_edit' object.pk %}"
+                            {% if object.owner == user or perms.newsapp.change_message %}
+                                   <a href="{% url 'newsapp:message_edit' object.pk %}"
                                    {% if object.newsletters.exists %}
                                        class="link-warning" data-bs-toggle="tooltip"
                                        title="Внимание! Сообщение используется в рассылках!">
@@ -56,6 +57,9 @@
                                    {% endif %}
                                    {{object.title}}
                                 </a>
+                            {% else %}
+                                   {{object.title}}
+                            {% endif %}
                             </td>
                             <td>{{object.text|truncatechars:70}}</td>
                             <td>{{object.created_at}}</td>

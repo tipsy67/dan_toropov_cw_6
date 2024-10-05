@@ -14,12 +14,14 @@
 <!--                            <i class="fas fa-table me-1"></i>-->
                             <h4 class="card-title">{{object.name}}</h4>
                             </span>
-                                <a href="{% url 'newsapp:newsletter_edit' object.pk %}"
-                                   class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
-                                    <i class="text-end bi bi-person-plus"></i>
-                                    Редактировать рассылку
-                                </a>
-                            </div>
+                                {% if object.owner == user or perms.newsapp.change_newsletter %}
+                                   <a href="{% url 'newsapp:newsletter_edit' object.pk %}"
+                                       class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+                                        <i class="text-end bi bi-person-plus"></i>
+                                        Редактировать рассылку
+                                    </a>
+                                 {% endif %}
+                           </div>
                             <div class="text-muted">Создана {{object.created_at}}</div>
                         </div>
                         <div class="card-body">
@@ -50,10 +52,15 @@
                                 </li>
                                 <li class="list-group-item">
                                     <b class="text-muted">Сообщение: </b>
+                                    {% if object.owner == user or perms.newsapp.change_message %}
                                     <a href="{% url 'newsapp:message_edit' object.message.pk %}" class="link-dark"
-                                       data-bs-toggle="tooltip">
-                                        {{object.message}}
+                                       data-bs-toggle="tooltip" title="Редактировать сообщение">
+                                        {{object.message.title}}
                                     </a>
+                                    {% else %}
+                                    {{object.message.title}}
+                                    {% endif %}
+                                    <p><small>{{object.message.text}}</small></p>
                                 </li>
                                 <li class="list-group-item">
                                     <b class="text-muted">Комментарий: </b>

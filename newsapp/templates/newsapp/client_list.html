@@ -45,6 +45,7 @@
                         {% for object in object_list %}
                         <tr>
                             <td>
+                                {% if object.owner == user or perms.newsapp.change_client %}
                                 <a href="{% url 'newsapp:client_edit' object.pk %}" data-bs-toggle="tooltip"
                                        title="Редактировать клиента">
                                     {{ object.last_name }} {{object.first_name}}
@@ -52,6 +53,12 @@
                                         {{ object.patronymic }}
                                     {% endif %}
                                 </a>
+                                {% else %}
+                                    {{ object.last_name }} {{object.first_name}}
+                                    {% if object.patronymic %}
+                                        {{ object.patronymic }}
+                                    {% endif %}
+                                {% endif %}
                             </td>
                             <td>{{object.email}}</td>
                             <td>{{object.comment|truncatechars:80}}</td>

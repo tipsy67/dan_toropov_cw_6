@@ -48,8 +48,10 @@
                         <tbody>
                         {% for object in object_list %}
                         <tr>
-                            <td><a href="{% url 'newsapp:newsletter_view' object.pk %}"
-                            data-bs-toggle="tooltip" title="Редактировать рассылку">{{object.name}}</a> </td>
+                            <td>
+                                <a href="{% url 'newsapp:newsletter_view' object.pk %}"
+                                   data-bs-toggle="tooltip" title="Редактировать рассылку">{{object.name}}</a>
+                            </td>
                             <td>{{object.first_mailing_at}}</td>
                             <td class="center">{{object.get_periodic_display}}</td>
                             <td class="center">
