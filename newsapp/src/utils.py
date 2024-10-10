@@ -27,5 +27,5 @@ def sendmail(recipients_emails:list, title: str, content:str):
         s.login(login, password)
         s.sendmail(msg['From'], recipients_emails, msg.as_string())
     finally:
-        print(msg)
+        # print(msg)
         s.quit()
